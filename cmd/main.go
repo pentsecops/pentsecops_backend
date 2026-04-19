@@ -71,22 +71,21 @@ func main() {
 	// This forces all queries through same connection, preventing cache mismatches
 	db.SetMaxOpenConns(1)
 	db.SetMaxIdleConns(1)
-	db.SetConnMaxLifetime(0)        // Keep connection alive indefinitely
-	db.SetConnMaxIdleTime(0)        // Don't close idle connections
+	db.SetConnMaxLifetime(0) // Keep connection alive indefinitely
+	db.SetConnMaxIdleTime(0) // Don't close idle connections
+
+	// MUST run DISCARD ALL BEFORE anything else to clear Supabase's prepared statement cache
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	if _, err := db.ExecContext(ctx, "DISCARD ALL"); err == nil {
+		log.Println("✓ Cleared prepared statement cache")
+	}
+	cancel()
 
 	// Test database connection
 	if err := db.Ping(); err != nil {
 		log.Fatalf("Failed to ping database: %v", err)
 	}
 	log.Println("✓ Database connection established")
-
-	// Clear stale prepared statements from Supabase cache
-	// This handles any leftover statements from previous connections
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	if _, err := db.ExecContext(ctx, "DISCARD PLANS"); err == nil {
-		log.Println("✓ Cleared prepared statement cache")
-	}
-	cancel()
 
 	// Run database migrations
 	migrator := database.NewMigrator(db)

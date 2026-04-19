@@ -278,12 +278,15 @@ func (au *AuthUseCase) RegisterUser(req *UserRegisterRequest) (*UserRegisterResp
 		}
 	}
 
-	// Send email notification with temporary password if email service is available
+	// Send email notification asynchronously (non-blocking)
+	// This allows the response to return immediately while email is sent in background
 	if au.emailService != nil {
-		if err := au.emailService.SendUserRegistrationEmail(req.Email, req.FirstName, tempPassword); err != nil {
-			// Log the error but don't fail the registration
-			fmt.Printf("Warning: failed to send registration email to %s: %v\n", req.Email, err)
-		}
+		go func(email, firstName, password string) {
+			if err := au.emailService.SendUserRegistrationEmail(email, firstName, password); err != nil {
+				// Log the error but don't fail the registration
+				fmt.Printf("Warning: failed to send registration email to %s: %v\n", email, err)
+			}
+		}(req.Email, req.FirstName, tempPassword)
 	}
 
 	return &UserRegisterResponse{
