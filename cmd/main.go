@@ -9,7 +9,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
-	_ "github.com/lib/pq"
+	_ "github.com/jackc/pgx/v5/stdlib"
 
 	"github.com/pentsecops/backend/internal/adapter/http/handlers"
 	"github.com/pentsecops/backend/internal/adapter/http/routes"
@@ -53,21 +53,20 @@ func main() {
 		dbName = "pentsecops"
 	}
 
-	// Connect to database
-	// For Supabase: disable prepared statement caching entirely to avoid connection pool issues
+	// Connect to database with pgx (handles connection pooling properly)
 	dsn := fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s sslmode=require prepared_statement_cache_mode=off binary_parameters=no",
-		dbHost, dbPort, dbUser, dbPassword, dbName,
+		"postgres://%s:%s@%s:%s/%s?sslmode=require",
+		dbUser, dbPassword, dbHost, dbPort, dbName,
 	)
 
-	db, err := sql.Open("postgres", dsn)
+	db, err := sql.Open("pgx", dsn)
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 	defer db.Close()
 
-	// Configure connection pool for Supabase
-	// Smaller pool to reduce connection issues with Railways/Supabase connection limits
+	// Configure connection pool for pgx + Supabase
+	// pgx handles prepared statements properly across pooled connections
 	db.SetMaxOpenConns(10)
 	db.SetMaxIdleConns(2)
 	db.SetConnMaxLifetime(time.Minute * 3)
