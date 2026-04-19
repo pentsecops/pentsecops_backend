@@ -83,7 +83,7 @@ func main() {
 	// Clear stale prepared statements from Supabase cache
 	// This handles any leftover statements from previous connections
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	if err := db.ExecContext(ctx, "DISCARD PLANS").Err(); err == nil {
+	if _, err := db.ExecContext(ctx, "DISCARD PLANS"); err == nil {
 		log.Println("✓ Cleared prepared statement cache")
 	}
 	cancel()
