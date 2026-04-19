@@ -1,0 +1,719 @@
+{
+  "info": {
+    "_postman_id": "messaging-notification-collection-2026",
+    "name": "PentSecOps Messaging & Notification API",
+    "description": "Comprehensive collection for testing PentSecOps Messaging and Notification endpoints with WebSocket support",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('userToken', jsonData.token);",
+                  "    pm.environment.set('userId', jsonData.user_id);",
+                  "    pm.environment.set('userRole', jsonData.role);",
+                  "    console.log('Token set: ' + jsonData.token);",
+                  "    console.log('User ID: ' + jsonData.user_id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"pentester@test.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('adminToken', jsonData.token);",
+                  "    pm.environment.set('adminId', jsonData.user_id);",
+                  "    console.log('Admin Token set: ' + jsonData.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@pentsecops.com\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Messaging - Core Operations",
+      "item": [
+        {
+          "name": "Get User Chats (Chat List)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/messages",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "messages"]
+            },
+            "description": "Retrieve all chats/conversations for the authenticated user with unread counts (like WhatsApp chat list). Returns the last message and unread count for each conversation."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Users for Messaging",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/messages/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "messages", "users"]
+            },
+            "description": "Retrieve all users (admin, pentester, stakeholder) with minimal info for message recipient selection"
+          },
+          "response": []
+        },
+        {
+          "name": "Send Message to User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"receiver_id\": \"f8329a43-0f1f-4737-a796-4bf13d22ef42\",\n  \"content\": \"Hi! This is a test message from the pentester. How are the project deliverables coming along?\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/messages/send",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "messages", "send"]
+            },
+            "description": "Create and send a 1-to-1 message to another user"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Conversation with User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/messages/conversation/f8329a43-0f1f-4737-a796-4bf13d22ef42?limit=50&offset=0",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "messages", "conversation", "f8329a43-0f1f-4737-a796-4bf13d22ef42"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "description": "Maximum number of messages to retrieve (max 100)"
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "description": "Pagination offset"
+                }
+              ]
+            },
+            "description": "Retrieve conversation history between two users with pagination support"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Messaging - Message Status",
+      "item": [
+        {
+          "name": "Mark Message as Delivered",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/messages/550e8400-e29b-41d4-a716-446655440000/delivered",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "messages", "550e8400-e29b-41d4-a716-446655440000", "delivered"]
+            },
+            "description": "Indicate that a message has been delivered to the recipient"
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Message as Read",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/messages/550e8400-e29b-41d4-a716-446655440000/read",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "messages", "550e8400-e29b-41d4-a716-446655440000", "read"]
+            },
+            "description": "Indicate that a message has been read by the recipient"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Unread Message Count",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/messages/unread/count",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "messages", "unread", "count"]
+            },
+            "description": "Get the number of undelivered messages for the authenticated user"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Message",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/messages/550e8400-e29b-41d4-a716-446655440000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "messages", "550e8400-e29b-41d4-a716-446655440000"]
+            },
+            "description": "Delete a message (sender or receiver can delete)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Notifications - Core Operations",
+      "item": [
+        {
+          "name": "Create Notification - Single User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"receiver_type\": \"single\",\n  \"receiver_ids\": [\"f8329a43-0f1f-4737-a796-4bf13d22ef42\"],\n  \"subject\": \"Task Assignment Update\",\n  \"message\": \"You have been assigned a new penetration testing task for the ACME Corp project. Please review and accept the assignment.\",\n  \"priority\": \"high\",\n  \"in_app\": true,\n  \"email\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "notifications"]
+            },
+            "description": "Create a notification for a single user with in-app and email delivery"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Notification - Multiple Users",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"receiver_type\": \"multiple\",\n  \"receiver_ids\": [\n    \"f8329a43-0f1f-4737-a796-4bf13d22ef42\",\n    \"a1234567-b890-c901-d234-e56789012345\",\n    \"b2345678-c901-d234-e567-89012345f678\"\n  ],\n  \"subject\": \"Project Milestone Reached\",\n  \"message\": \"Congratulations! Your project has successfully reached the final milestone. Please prepare for the delivery presentation scheduled for next week.\",\n  \"priority\": \"medium\",\n  \"in_app\": true,\n  \"email\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "notifications"]
+            },
+            "description": "Create notifications for multiple users at once"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Notification - Broadcast",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"receiver_type\": \"broadcast\",\n  \"subject\": \"System Maintenance Notice\",\n  \"message\": \"The PentSecOps platform will undergo scheduled maintenance on April 15th from 2:00 AM to 4:00 AM UTC. Please plan accordingly. Thank you for your patience.\",\n  \"priority\": \"critical\",\n  \"in_app\": true,\n  \"email\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "notifications"]
+            },
+            "description": "Broadcast a notification to all users in the system"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Notification - Low Priority In-App Only",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"receiver_type\": \"single\",\n  \"receiver_ids\": [\"f8329a43-0f1f-4737-a796-4bf13d22ef42\"],\n  \"subject\": \"Tip: Keyboard Shortcuts\",\n  \"message\": \"Did you know? You can use Ctrl+M to quickly jump to your messages from anywhere in the application.\",\n  \"priority\": \"low\",\n  \"in_app\": true,\n  \"email\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "notifications"]
+            },
+            "description": "Create a low-priority in-app only notification (for tips and non-urgent updates)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Notifications - Query & Management",
+      "item": [
+        {
+          "name": "Get User Notifications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications?limit=50&offset=0",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "notifications"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "description": "Maximum number of notifications to retrieve (max 100)"
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "description": "Pagination offset for retrieving older notifications"
+                }
+              ]
+            },
+            "description": "Retrieve all notifications for the authenticated user with pagination"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Notification Delivery Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications/550e8400-e29b-41d4-a716-446655440000/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "notifications", "550e8400-e29b-41d4-a716-446655440000", "stats"]
+            },
+            "description": "Get detailed delivery statistics for a specific notification including pending, delivered, failed, and bounced counts"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Notification",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications/550e8400-e29b-41d4-a716-446655440000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "notifications", "550e8400-e29b-41d4-a716-446655440000"]
+            },
+            "description": "Delete a notification from the system"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "WebSocket - Real-time Messaging",
+      "item": [
+        {
+          "name": "WebSocket Connection with Token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "ws://{{host}}/ws?token={{userToken}}",
+              "protocol": "ws",
+              "host": ["{{host}}"],
+              "path": ["ws"],
+              "query": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "description": "PASETO bearer token for authentication"
+                }
+              ]
+            },
+            "description": "Establish WebSocket connection for real-time messaging and notifications. Use the token parameter instead of Authorization header for WebSocket."
+          }
+        },
+        {
+          "name": "WebSocket Connection with User ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "ws://{{host}}/ws?user_id={{userId}}",
+              "protocol": "ws",
+              "host": ["{{host}}"],
+              "path": ["ws"],
+              "query": [
+                {
+                  "key": "user_id",
+                  "value": "{{userId}}",
+                  "description": "User ID for authenticated connection"
+                }
+              ]
+            },
+            "description": "Establish WebSocket connection using user ID (requires prior authentication)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Test Scenarios - Complete Workflows",
+      "item": [
+        {
+          "name": "Scenario 1: Send and Retrieve Message",
+          "item": [
+            {
+              "name": "1. Get all users to find recipient",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{userToken}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/messages/users",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "messages", "users"]
+                }
+              }
+            },
+            {
+              "name": "2. Send message to first user",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{userToken}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"receiver_id\": \"f8329a43-0f1f-4737-a796-4bf13d22ef42\",\n  \"content\": \"Testing complete workflow - message 1\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/messages/send",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "messages", "send"]
+                }
+              }
+            },
+            {
+              "name": "3. Check unread count",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{userToken}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/messages/unread/count",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "messages", "unread", "count"]
+                }
+              }
+            },
+            {
+              "name": "4. Get conversation history",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{userToken}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/messages/conversation/f8329a43-0f1f-4737-a796-4bf13d22ef42?limit=10&offset=0",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "messages", "conversation", "f8329a43-0f1f-4737-a796-4bf13d22ef42"],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Scenario 2: Notification Broadcast and Stats",
+          "item": [
+            {
+              "name": "1. Send broadcast notification",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{adminToken}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"receiver_type\": \"broadcast\",\n  \"subject\": \"Test Notification\",\n  \"message\": \"This is a test broadcast notification\",\n  \"priority\": \"medium\",\n  \"in_app\": true,\n  \"email\": false\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/notifications",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "notifications"]
+                }
+              }
+            },
+            {
+              "name": "2. Get all notifications",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{userToken}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/notifications?limit=50&offset=0",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "notifications"],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "50"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8091",
+      "type": "string",
+      "description": "API base URL"
+    },
+    {
+      "key": "host",
+      "value": "localhost:8091",
+      "type": "string",
+      "description": "WebSocket host (without protocol)"
+    },
+    {
+      "key": "userToken",
+      "value": "",
+      "type": "string",
+      "description": "PASETO token for authenticated user"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string",
+      "description": "PASETO token for admin user"
+    },
+    {
+      "key": "userId",
+      "value": "",
+      "type": "string",
+      "description": "Authenticated user's ID"
+    },
+    {
+      "key": "adminId",
+      "value": "",
+      "type": "string",
+      "description": "Admin user's ID"
+    }
+  ]
+}

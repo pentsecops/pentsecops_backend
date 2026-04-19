@@ -1,0 +1,936 @@
+{
+  "info": {
+    "_postman_id": "pentsecops-backend-collection",
+    "name": "PentSecOps Backend API",
+    "description": "Complete API collection for PentSecOps Backend including Authentication and User Management",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "12345678"
+  },
+  "item": [
+    {
+      "name": "Authentication APIs",
+      "item": [
+        {
+          "name": "Admin Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('admin_token', jsonData.data.token);",
+                  "    pm.environment.set('admin_id', jsonData.data.admin_id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@pentsecops.com\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "register"
+              ]
+            },
+            "description": "Register a new admin account"
+          },
+          "response": []
+        },
+        {
+          "name": "Admin Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('admin_token', jsonData.data.token);",
+                  "    pm.environment.set('admin_id', jsonData.data.admin_id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@pentsecops.com\",\n  \"password\": \"SecureAdminPass123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "login"
+              ]
+            },
+            "description": "Login as admin"
+          },
+          "response": []
+        },
+        {
+          "name": "Register Pentester (Admin Only)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('user_token', jsonData.data.token);",
+                  "    pm.environment.set('user_id', jsonData.data.user_id);",
+                  "    console.log('Temporary Password: ' + jsonData.data.temporary_password);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"karty7291@gmail.com\",\n  \"role\": \"pentester\",\n  \"first_name\": \"John\",\n  \"last_name\": \"Security\",\n  \"specialization\": \"Web Application Security\",\n  \"experience_years\": 5,\n  \"resume\": \"Experienced in penetration testing and security audits.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/register/user",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "register",
+                "user"
+              ]
+            },
+            "description": "Register a pentester user (Admin only, requires admin token)"
+          },
+          "response": []
+        },
+        {
+          "name": "Register Stakeholder (Admin Only)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('user_token', jsonData.data.token);",
+                  "    pm.environment.set('user_id', jsonData.data.user_id);",
+                  "    console.log('Temporary Password: ' + jsonData.data.temporary_password);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"stakeholder@pentsecops.com\",\n  \"role\": \"stakeholder\",\n  \"first_name\": \"Jane\",\n  \"last_name\": \"Manager\",\n  \"company\": \"Tech Corp\",\n  \"address\": \"123 Business Street, City, State\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/register/user",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "register",
+                "user"
+              ]
+            },
+            "description": "Register a stakeholder user (Admin only, requires admin token)"
+          },
+          "response": []
+        },
+        {
+          "name": "User Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('user_token', jsonData.data.token);",
+                  "    pm.environment.set('user_id', jsonData.data.user_id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"karty7291@gmail.com\",\n  \"password\": \"Karthik@04\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "login"
+              ]
+            },
+            "description": "Login as a regular user (pentester or stakeholder)"
+          },
+          "response": []
+        }
+      ],
+      "description": "Authentication endpoints for admin and user registration/login"
+    },
+    {
+      "name": "Admin - User Management",
+      "item": [
+        {
+          "name": "List All Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users"
+              ]
+            },
+            "description": "List all users (Admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Specific User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/user/{{user_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "user",
+                "{{user_id}}"
+              ]
+            },
+            "description": "Get details of a specific user (Admin only). Replace {{user_id}} with actual user UUID"
+          },
+          "response": []
+        },
+        {
+          "name": "Update User Status",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"active\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/user/{{user_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "user",
+                "{{user_id}}"
+              ]
+            },
+            "description": "Update user status (Admin only). Valid status values: active, freeze, suspended"
+          },
+          "response": []
+        },
+        {
+          "name": "Update User Profile (Pentester)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Security\",\n  \"email\": \"john.security@pentsecops.com\",\n  \"specialization\": \"Web Application Security\",\n  \"experience_years\": 7,\n  \"resume\": \"Expert in web application penetration testing with 7+ years experience.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/user/{{user_id}}/profile",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "user",
+                "{{user_id}}",
+                "profile"
+              ]
+            },
+            "description": "Update pentester profile (Admin only). Use this for users with role='pentester'"
+          },
+          "response": []
+        },
+        {
+          "name": "Update User Profile (Stakeholder)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Jane\",\n  \"last_name\": \"Manager\",\n  \"email\": \"jane.manager@pentsecops.com\",\n  \"company\": \"Tech Corp Inc\",\n  \"address\": \"456 Corporate Boulevard, Business City, State 12345\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/user/{{user_id}}/profile",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "user",
+                "{{user_id}}",
+                "profile"
+              ]
+            },
+            "description": "Update stakeholder profile (Admin only). Use this for users with role='stakeholder'"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/user/{{user_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "user",
+                "{{user_id}}"
+              ]
+            },
+            "description": "Delete a user permanently (Admin only). This will also delete the user's profile."
+          },
+          "response": []
+        }
+      ],
+      "description": "Admin-only endpoints for managing users"
+    },
+    {
+      "name": "User - Profile Management",
+      "item": [
+        {
+          "name": "Get Own Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/profile",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "profile"
+              ]
+            },
+            "description": "Get authenticated user's own profile"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Own Profile (Pentester)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Security\",\n  \"email\": \"john.security@pentsecops.com\",\n  \"specialization\": \"Cloud Security\",\n  \"experience_years\": 6,\n  \"resume\": \"Specializing in cloud infrastructure security and compliance.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/profile",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "profile"
+              ]
+            },
+            "description": "Update authenticated pentester's own profile"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Own Profile (Stakeholder)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Jane\",\n  \"last_name\": \"Manager\",\n  \"email\": \"jane.manager@pentsecops.com\",\n  \"company\": \"Tech Solutions Ltd\",\n  \"address\": \"789 Innovation Drive, Tech City, State 67890\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/profile",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "profile"
+              ]
+            },
+            "description": "Update authenticated stakeholder's own profile"
+          },
+          "response": []
+        }
+      ],
+      "description": "User endpoints for managing their own profile"
+    },
+    {
+      "name": "Password Management",
+      "item": [
+        {
+          "name": "Change Password (Admin/User)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_password\": \"OldPassword123!\",\n  \"new_password\": \"NewSecurePass456!\",\n  \"confirm_password\": \"NewSecurePass456!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/change-password",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "change-password"
+              ]
+            },
+            "description": "Change password for authenticated user (admin, pentester, or stakeholder)"
+          },
+          "response": []
+        }
+      ],
+      "description": "Password management endpoints for all user types"
+    },
+    {
+      "name": "Forgot Password Management",
+      "item": [
+        {
+          "name": "Request Password Reset",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"pentester@pentsecops.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/forgot-password",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "forgot-password"
+              ]
+            },
+            "description": "Submit a forgot password request (no authentication required). User submits their email and request escalates to admin for approval."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Pending Password Reset Requests (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/forgot-password-requests",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "forgot-password-requests"
+              ]
+            },
+            "description": "Get all pending password reset requests (admin only). Returns list of all users waiting for admin approval."
+          },
+          "response": []
+        },
+        {
+          "name": "Approve/Reject Password Reset Request (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"accepted\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/forgot-password-request/{{request_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "forgot-password-request",
+                "{{request_id}}"
+              ]
+            },
+            "description": "Approve or reject a password reset request (admin only). Set status to 'accepted' to approve (generates new password and sends email) or 'rejected' to reject. Replace {{request_id}} with the request ID from pending list."
+          },
+          "response": []
+        }
+      ],
+      "description": "Forgot password management endpoints with admin approval workflow"
+    },
+    {
+      "name": "AI Chat APIs",
+      "item": [
+        {
+          "name": "Process Chat (Send Query to AI)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"What is penetration testing?\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/chats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "chats"
+              ]
+            },
+            "description": "Send a query to the AI chat service. The system will send the query to Groq API and return the AI-generated response. Available for all authenticated users (admin, pentester, stakeholder)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Conversation History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/chats/history?limit=50",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "chats",
+                "history"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "description": "Optional: Maximum number of messages to retrieve (default: 50, max: 100)"
+                }
+              ]
+            },
+            "description": "Retrieve the conversation history for the authenticated user. Messages are ordered by creation time (most recent first). Optional limit parameter controls how many messages to retrieve."
+          },
+          "response": []
+        },
+        {
+          "name": "Clear Conversation History",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/chats/history",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "chats",
+                "history"
+              ]
+            },
+            "description": "Delete all chat messages for the authenticated user. This action is irreversible."
+          },
+          "response": []
+        }
+      ],
+      "description": "AI Chat integration with Groq API. Send queries and receive AI-generated responses. Available for all authenticated user roles."
+    },
+    {
+      "name": "Logout",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{admin_token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/logout",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "logout"
+          ]
+        },
+        "description": "Logout endpoint to invalidate the user's session. Blacklists the current token, preventing future use. Works for all user types (admin, pentester, stakeholder). No request body required."
+      },
+      "response": []
+    },
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "health"
+          ]
+        },
+        "description": "Health check endpoint (no authentication required)"
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "admin_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "request_id",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
