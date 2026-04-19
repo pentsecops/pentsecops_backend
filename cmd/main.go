@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 	"time"
 
@@ -54,10 +55,11 @@ func main() {
 	}
 
 	// Connect to database with pgx
-	// Use simple DSN without statement cache - rely on single connection
+	// Use options to disable prepared statement caching on Supabase
+	options := "-c statement_cache_mode=off"
 	dsn := fmt.Sprintf(
-		"postgres://%s:%s@%s:%s/%s?sslmode=require",
-		dbUser, dbPassword, dbHost, dbPort, dbName,
+		"postgres://%s:%s@%s:%s/%s?sslmode=require&options=%s",
+		dbUser, dbPassword, dbHost, dbPort, dbName, url.QueryEscape(options),
 	)
 
 	db, err := sql.Open("pgx", dsn)
@@ -70,8 +72,8 @@ func main() {
 	// This forces all queries through same connection, preventing cache mismatches
 	db.SetMaxOpenConns(1)
 	db.SetMaxIdleConns(1)
-	db.SetConnMaxLifetime(0)        // Keep connection alive indefinitely
-	db.SetConnMaxIdleTime(0)        // Don't close idle connections
+	db.SetConnMaxLifetime(0) // Keep connection alive indefinitely
+	db.SetConnMaxIdleTime(0) // Don't close idle connections
 
 	// Test database connection
 	if err := db.Ping(); err != nil {
