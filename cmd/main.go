@@ -53,9 +53,10 @@ func main() {
 		dbName = "pentsecops"
 	}
 
-	// Connect to database with pgx (handles connection pooling properly)
+	// Connect to database with pgx
+	// Use simple DSN without statement cache - rely on single connection
 	dsn := fmt.Sprintf(
-		"postgres://%s:%s@%s:%s/%s?sslmode=require&statement_cache_mode=describe",
+		"postgres://%s:%s@%s:%s/%s?sslmode=require",
 		dbUser, dbPassword, dbHost, dbPort, dbName,
 	)
 
@@ -65,11 +66,12 @@ func main() {
 	}
 	defer db.Close()
 
-	// Configure connection pool for pgx + Supabase
-	// Disable pooling to avoid prepared statement cache issues across connections
-	// All queries will use a single connection, eliminating cache mismatches
+	// CRITICAL: Set connection to 1 to avoid prepared statement cache conflicts
+	// This forces all queries through same connection, preventing cache mismatches
 	db.SetMaxOpenConns(1)
-	db.SetMaxIdleConns(0)
+	db.SetMaxIdleConns(1)
+	db.SetConnMaxLifetime(0)        // Keep connection alive indefinitely
+	db.SetConnMaxIdleTime(0)        // Don't close idle connections
 
 	// Test database connection
 	if err := db.Ping(); err != nil {
