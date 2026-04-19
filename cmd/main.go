@@ -55,7 +55,7 @@ func main() {
 
 	// Connect to database
 	dsn := fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=require statement_cache_mode=describe",
 		dbHost, dbPort, dbUser, dbPassword, dbName,
 	)
 
@@ -64,6 +64,11 @@ func main() {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 	defer db.Close()
+
+	// Configure connection pool for Supabase
+	db.SetMaxOpenConns(25)
+	db.SetMaxIdleConns(5)
+	db.SetConnMaxLifetime(time.Minute * 5)
 
 	// Test database connection
 	if err := db.Ping(); err != nil {
