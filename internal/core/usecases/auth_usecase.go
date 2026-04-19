@@ -3,6 +3,7 @@ package usecases
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/pentsecops/backend/internal/core/domain"
@@ -210,6 +211,14 @@ func (au *AuthUseCase) RegisterUser(req *UserRegisterRequest) (*UserRegisterResp
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate password: %w", err)
 	}
+
+	// LOG GENERATED PASSWORD TO CONSOLE (Email may not work on production)
+	fmt.Println("\n" + strings.Repeat("=", 80))
+	fmt.Printf("🔐 USER REGISTRATION PASSWORD\n")
+	fmt.Printf("Email: %s\n", req.Email)
+	fmt.Printf("Role: %s\n", req.Role)
+	fmt.Printf("Temporary Password: %s\n", tempPassword)
+	fmt.Println(strings.Repeat("=", 80) + "\n")
 
 	// Hash password
 	passwordHash, err := utils.HashPassword(tempPassword)
