@@ -54,8 +54,9 @@ func main() {
 	}
 
 	// Connect to database
+	// For Supabase: disable prepared statement caching entirely to avoid connection pool issues
 	dsn := fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s sslmode=require statement_cache_mode=describe",
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=require prepared_statement_cache_mode=off binary_parameters=no",
 		dbHost, dbPort, dbUser, dbPassword, dbName,
 	)
 
@@ -66,9 +67,11 @@ func main() {
 	defer db.Close()
 
 	// Configure connection pool for Supabase
-	db.SetMaxOpenConns(25)
-	db.SetMaxIdleConns(5)
-	db.SetConnMaxLifetime(time.Minute * 5)
+	// Smaller pool to reduce connection issues with Railways/Supabase connection limits
+	db.SetMaxOpenConns(10)
+	db.SetMaxIdleConns(2)
+	db.SetConnMaxLifetime(time.Minute * 3)
+	db.SetConnMaxIdleTime(time.Minute * 1)
 
 	// Test database connection
 	if err := db.Ping(); err != nil {
