@@ -1,10 +1,10 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"log"
-	"net/url"
 	"os"
 	"time"
 
@@ -55,11 +55,10 @@ func main() {
 	}
 
 	// Connect to database with pgx
-	// Use options to disable prepared statement caching on Supabase
-	options := "-c statement_cache_mode=off"
+	// Disable prepared statement caching completely for Supabase compatibility
 	dsn := fmt.Sprintf(
-		"postgres://%s:%s@%s:%s/%s?sslmode=require&options=%s",
-		dbUser, dbPassword, dbHost, dbPort, dbName, url.QueryEscape(options),
+		"postgres://%s:%s@%s:%s/%s?sslmode=require&prepared_statement_cache_mode=off",
+		dbUser, dbPassword, dbHost, dbPort, dbName,
 	)
 
 	db, err := sql.Open("pgx", dsn)
@@ -72,14 +71,22 @@ func main() {
 	// This forces all queries through same connection, preventing cache mismatches
 	db.SetMaxOpenConns(1)
 	db.SetMaxIdleConns(1)
-	db.SetConnMaxLifetime(0) // Keep connection alive indefinitely
-	db.SetConnMaxIdleTime(0) // Don't close idle connections
+	db.SetConnMaxLifetime(0)        // Keep connection alive indefinitely
+	db.SetConnMaxIdleTime(0)        // Don't close idle connections
 
 	// Test database connection
 	if err := db.Ping(); err != nil {
 		log.Fatalf("Failed to ping database: %v", err)
 	}
 	log.Println("✓ Database connection established")
+
+	// Clear stale prepared statements from Supabase cache
+	// This handles any leftover statements from previous connections
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	if err := db.ExecContext(ctx, "DISCARD PLANS").Err(); err == nil {
+		log.Println("✓ Cleared prepared statement cache")
+	}
+	cancel()
 
 	// Run database migrations
 	migrator := database.NewMigrator(db)

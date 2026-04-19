@@ -108,7 +108,7 @@ Your temporary password is: %s
 
 Please change this password after your first login for security purposes.
 
-Login here: https://pentsecops.com/login
+Login here: https://pentsecops.vercel.app/log-in
 
 Best regards,
 PentSecOps Team
@@ -145,7 +145,7 @@ PentSecOps Team
             <p><strong>Important:</strong> Please change this password after your first login for security purposes.</p>
             
             <p>
-                <a href="https://pentsecops.com/login" class="button">Login to Your Account</a>
+                <a href="https://pentsecops.vercel.app/log-in" class="button">Login to Your Account</a>
             </p>
             
             <p>If you have any questions, please contact the support team.</p>
@@ -242,7 +242,7 @@ Your temporary password is: %s
 
 Please change this password after your first login for security purposes.
 
-Login here: https://pentsecops.com/login
+Login here: https://pentsecops.vercel.app/log-in
 
 Best regards,
 PentSecOps Team
@@ -282,7 +282,7 @@ PentSecOps Team
             </div>
             
             <p>
-                <a href="https://pentsecops.com/login" class="button">Login to Your Account</a>
+                <a href="https://pentsecops.vercel.app/log-in" class="button">Login to Your Account</a>
             </p>
             
             <p>If you have any questions, please contact the support team.</p>
