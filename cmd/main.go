@@ -55,7 +55,7 @@ func main() {
 
 	// Connect to database with pgx (handles connection pooling properly)
 	dsn := fmt.Sprintf(
-		"postgres://%s:%s@%s:%s/%s?sslmode=require",
+		"postgres://%s:%s@%s:%s/%s?sslmode=require&statement_cache_mode=describe",
 		dbUser, dbPassword, dbHost, dbPort, dbName,
 	)
 
