@@ -66,11 +66,10 @@ func main() {
 	defer db.Close()
 
 	// Configure connection pool for pgx + Supabase
-	// pgx handles prepared statements properly across pooled connections
-	db.SetMaxOpenConns(10)
-	db.SetMaxIdleConns(2)
-	db.SetConnMaxLifetime(time.Minute * 3)
-	db.SetConnMaxIdleTime(time.Minute * 1)
+	// Disable pooling to avoid prepared statement cache issues across connections
+	// All queries will use a single connection, eliminating cache mismatches
+	db.SetMaxOpenConns(1)
+	db.SetMaxIdleConns(0)
 
 	// Test database connection
 	if err := db.Ping(); err != nil {
